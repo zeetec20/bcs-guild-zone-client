@@ -2,7 +2,6 @@
 
 ## Device
 It's device I use to build this project
-
 - Node : 15.14.0
 
 ## Run Project
