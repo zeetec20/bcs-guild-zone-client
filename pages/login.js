@@ -1,5 +1,5 @@
 import Navbar from "components/Navbar"
-import { Box, chakra, HStack, VStack, Input, FormControl, Button, useToast, position } from '@chakra-ui/react'
+import { chakra, HStack, VStack, Input, Button, useToast } from '@chakra-ui/react'
 import configs from "configs"
 import Footer from "components/Footer"
 import Image from 'next/image'

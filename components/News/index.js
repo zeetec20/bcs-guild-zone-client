@@ -2,7 +2,6 @@ import { Box, chakra, HStack, VStack } from '@chakra-ui/react'
 import configs from 'configs'
 import Image from 'next/image'
 import newsImage from 'assets/images/news.png'
-import { motion } from 'framer-motion'
 
 const { color, font } = configs
 

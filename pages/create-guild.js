@@ -1,11 +1,10 @@
 import Navbar from "components/Navbar"
-import { Box, chakra, HStack, Input, SimpleGrid, VStack, Textarea, Button, useToast, Flex, Heading, Spacer, Select, Show } from '@chakra-ui/react'
+import { Box, chakra, HStack, Input, SimpleGrid, VStack, Textarea, Button, useToast, Spacer, Select, Show } from '@chakra-ui/react'
 import Footer from "components/Footer"
 import configs from "configs"
 import { BsFillImageFill } from "react-icons/bs"
 import backgroundImage from 'assets/images/background.png'
-import { motion } from "framer-motion"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { useRouter } from "next/router"
 import createGuildValidator from 'helper/validator/createGuildValidator'

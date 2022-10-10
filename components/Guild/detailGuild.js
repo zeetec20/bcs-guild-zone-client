@@ -1,9 +1,8 @@
-import { Modal, ModalOverlay, ModalContent, ModalCloseButton, ModalBody, Button, chakra, SimpleGrid, Box, useDisclosure, useToast } from "@chakra-ui/react"
+import { Modal, ModalOverlay, ModalContent, Button, chakra, Box, useToast } from "@chakra-ui/react"
 import configs from 'configs'
 import { motion } from "framer-motion"
 import Image from 'next/image'
 import GameGuild from 'components/GameGuild'
-import JoinGuild from './joinGuild'
 import guildServices from "services/guild"
 import { useEffect, useRef, useState } from "react"
 import authenticationServices from "services/authentication"

@@ -1,4 +1,4 @@
-import { chakra, HStack, Box, VStack, transition, Button, SimpleGrid, Center } from '@chakra-ui/react'
+import { chakra, VStack, SimpleGrid } from '@chakra-ui/react'
 import backgroundImage from 'assets/images/background.png'
 import robotImage from 'assets/images/robot.png'
 import Navbar from 'components/Navbar'

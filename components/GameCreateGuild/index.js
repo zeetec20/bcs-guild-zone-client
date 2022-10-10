@@ -1,10 +1,6 @@
-import { HStack, Box, chakra, background, SimpleGrid } from '@chakra-ui/react'
-import bannerImage from 'assets/images/banner_guild.png'
-import logoGameImage from 'assets/images/logo_game.png'
+import { Box, chakra } from '@chakra-ui/react'
 import Image from 'next/image'
 import configs from 'configs'
-import { FaMapMarkerAlt } from 'react-icons/fa'
-import { Grid } from 'swiper'
 import { BsCheckLg } from 'react-icons/bs'
 
 const { color, font } = configs

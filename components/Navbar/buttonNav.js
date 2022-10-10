@@ -1,4 +1,4 @@
-import { Box, Link as LinkChakra } from '@chakra-ui/react'
+import { Link as LinkChakra } from '@chakra-ui/react'
 import configs from 'configs'
 import Link from 'next/link'
 import NavbarStyle from 'styles/Navbar.module.scss'

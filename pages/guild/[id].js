@@ -163,7 +163,7 @@ const DashboardGuild = () => {
             <Navbar showLogo={false} />
             <HStack w='full' minH='100vh' bg={color.purple} spacing='0' alignItems='start'>
                 <Show breakpoint="(min-width: 1200px)">
-                    <Box w='20vw' bg={color.red} bgImg={backgroundImage.src} bgSize='cover' bgPosition='center' h='full' position='fixed' zIndex='2' >
+                    <Box w='20vw' bg={color.darkBlue} bgImg={backgroundImage.src} bgSize='cover' bgPosition='center' h='full' position='fixed' zIndex='2' >
                         <Box mt='25px' mx='clamp(10px, 1.8vw, 30px)'>
                             <Box
                                 w='full'

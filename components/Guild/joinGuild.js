@@ -1,4 +1,4 @@
-import { Modal, ModalOverlay, ModalContent, ModalCloseButton, ModalBody, Button, chakra, SimpleGrid, Box, HStack, Input, VStack, Select, Textarea, useToast } from "@chakra-ui/react"
+import { Modal, ModalOverlay, ModalContent, Button, chakra, SimpleGrid, Box, Input, VStack, Textarea, useToast } from "@chakra-ui/react"
 import configs from 'configs'
 import { motion } from "framer-motion"
 import Image from 'next/image'

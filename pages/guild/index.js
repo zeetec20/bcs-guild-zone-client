@@ -1,34 +1,21 @@
 import Navbar from "components/Navbar"
-import { Box, chakra, HStack, Input, SimpleGrid, VStack, Textarea, Button, useToast } from '@chakra-ui/react'
+import { chakra, SimpleGrid, useToast } from '@chakra-ui/react'
 import Footer from "components/Footer"
 import configs from "configs"
-import { FaDiscord, FaFacebook, FaInstagram, FaMedium } from "react-icons/fa"
 import backgroundImage from 'assets/images/background.png'
-import { motion } from "framer-motion"
 import { useEffect, useRef, useState } from "react"
-import sendMessageValidator from 'helper/validator/sendMessageValidator'
 import guildzone from "services/guildzone"
-import ToastCustom from 'components/Toast'
 import Guild from "components/Guild"
 
 const { font, color } = configs
 
 const GuildPage = () => {
-    const [isLoading, setIsLoading] = useState(false)
-    const toast = useToast()
-    const toastRef = useRef()
     const [guilds, setGuilds] = useState([])
 
     useEffect(() => {
         if (!guilds.length) guildzone.getAllGuilds().then(guilds => setGuilds(guilds))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-
-
-    }
 
     return (
         <chakra.div

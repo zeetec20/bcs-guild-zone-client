@@ -1,5 +1,5 @@
 import Navbar from "components/Navbar"
-import { Box, chakra, HStack, Input, SimpleGrid, VStack, Textarea, Button, useToast } from '@chakra-ui/react'
+import { Box, chakra, Input, SimpleGrid, VStack, Textarea, Button, useToast } from '@chakra-ui/react'
 import Footer from "components/Footer"
 import configs from "configs"
 import { FaDiscord, FaFacebook, FaInstagram, FaMedium } from "react-icons/fa"

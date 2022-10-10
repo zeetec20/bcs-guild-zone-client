@@ -1,10 +1,7 @@
 import { HStack, Box, chakra, useDisclosure } from '@chakra-ui/react'
-import bannerImage from 'assets/images/banner_guild.png'
-import logoGameImage from 'assets/images/logo_game.png'
 import Image from 'next/image'
 import configs from 'configs'
 import { FaMapMarkerAlt } from 'react-icons/fa'
-import guild from 'services/guild'
 import DetailGuild from './detailGuild'
 import JoinGuild from './joinGuild'
 

@@ -1,4 +1,4 @@
-import { chakra, HStack, Show, SimpleGrid, Stack } from '@chakra-ui/react'
+import { chakra, HStack, Show, Stack } from '@chakra-ui/react'
 import logoImage from 'assets/images/logo.png'
 import Image from 'next/image'
 import { FaDiscord, FaMedium, FaFacebook, FaInstagram } from 'react-icons/fa'
