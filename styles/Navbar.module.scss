@@ -1,0 +1,8 @@
+
+@import './_color.variable.module.scss';
+
+@media only screen and (max-width: 850px) {
+    .navbar-mobile-desktop-button {
+        color: $darkBlue !important;
+    }
+}

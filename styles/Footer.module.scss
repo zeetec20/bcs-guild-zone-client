@@ -1,0 +1,10 @@
+@media only screen and (max-width: 750px) {
+    .footer-text-link {
+        flex-direction: column !important;
+        align-items: flex-Start;
+
+        a {
+            margin: 0 !important;
+        }
+    }
+}

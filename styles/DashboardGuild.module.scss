@@ -1,0 +1,10 @@
+.dashboard-page {
+    margin-left: 20vw !important;
+}
+
+@media only screen and (max-width: 1200px) {
+    .dashboard-page {
+        margin-left: 0 !important;
+        width: 100vw !important;
+    }
+}

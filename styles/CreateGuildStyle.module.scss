@@ -1,0 +1,47 @@
+@media only screen and (max-width: 1085px) {
+    .create-guild-page1-active {
+       height: 1300px !important;
+    }
+
+    .create-guild-page1-profile {
+        width: 100% !important;
+    }
+
+    .create-guild-page1-social-media {
+        width: 100% !important;
+    }
+
+    .create-guild-page1-button-submit {
+        margin-top: 30px;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .create-guild-slides {
+        width: 180vw !important;
+    }
+
+    .create-guild-wrap, .create-guild-page1, .create-guild-page2 {
+        width: 90vw !important;
+    }
+}
+
+
+@media only screen and (max-width: 430px) {
+    .create-guild-page1-active {
+        height: 1370px !important;
+     }
+
+    .create-guild-page1-social-media, .create-guild-page1-profile {
+        width: 80vw !important;
+        align-items: center !important;
+        place-self: center normal !important;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .create-guild-page1-social-media {
+        align-items: flex-start !important;
+        place-self: unset !important;
+    }
+}

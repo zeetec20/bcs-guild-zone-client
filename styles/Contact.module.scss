@@ -1,0 +1,71 @@
+@media only screen and (max-width: 1351px) and (min-width: 800px) {
+    .contact-message-input2 {
+        margin-top: 0px !important;
+    }
+}
+
+@media only screen and (max-width: 666px) {
+    .contact-message-input2 {
+        margin-top: 0px !important;
+    }
+}
+
+@media only screen and (max-width: 1052px) {
+    .contact-social-media {
+        place-self: start start !important;
+        margin-top: 60px;
+        margin-left: 18vw;
+    }
+
+    .contact-message {
+        margin-left: 18vw;
+    }
+
+    @media only screen and (max-width: 900px) {
+        .contact-social-media {
+            margin-left: 10vw;
+        }
+    
+        .contact-message {
+            margin-left: 10vw;
+        }
+
+        @media only screen and (max-width: 800px) {
+            .contact-social-media {
+                margin-left: 0;
+                width: 75vw !important;
+                place-self: start center !important;
+            }
+        
+            .contact-message {
+                margin-left: 0;
+                width: 75vw !important;
+                place-self: start center !important;
+            }
+
+            @media only screen and (max-width: 500px) {
+                .contact-button-send-message {
+                    padding-inline: 0;
+                    width: 100%;
+                }
+            }
+        }
+    }
+}
+
+
+
+
+@media only screen and (max-width: 1350px) {
+    .contact-description {
+        width: 60vw !important;
+    }
+
+
+    @media only screen and (max-width: 700px) {
+        .contact-description {
+            width: 80vw !important;
+        }
+    }
+}
+
