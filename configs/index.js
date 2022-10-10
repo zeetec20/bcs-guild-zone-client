@@ -7,7 +7,7 @@ const config = {
     color,
     font,
     env: {
-        domain: 'http://192.168.1.5:4000'
+        domain: 'http://127.0.0.1:4000'
     },
     regions
 }

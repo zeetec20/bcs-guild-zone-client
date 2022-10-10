@@ -120,7 +120,6 @@ const CreateGuildPage = () => {
                 try {
                     const formData = new FormData()
                     const data = { ...isValid, ...submitData, games: selectedGame.join(', ') }
-                    console.log(data)
                     Object.keys(data).forEach(key => {
                         formData.append(key, data[key])
                     })
@@ -756,7 +755,6 @@ const CreateGuildPage = () => {
                                 <SimpleGrid mt='15px !important' py='25px' px='15px' minChildWidth='260px' spacingY='35px' boxShadow={`0px 0px 20px -10px ${color.grey}`} rounded='xl' w='full' position='relative' overflow='auto'>
                                     {games.map((g, index) => {
                                         const isSelected = selectedGame.filter(e => e == g.id).length
-                                        console.log(g, g.id)
                                         return (
                                             <Game
                                                 key={index}

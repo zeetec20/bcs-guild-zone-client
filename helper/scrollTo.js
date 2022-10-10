@@ -1,5 +1,4 @@
 const scrollTo = (top, left) => {
-    console.log(top, left)
     window.scrollTo({
         top,
         left,

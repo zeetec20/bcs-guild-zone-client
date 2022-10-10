@@ -29,7 +29,6 @@ const refreshUser = async () => {
 const getToken = () => {
     const token = Cookies.get('token')
     if (token == undefined) logout()
-    console.log(token, Cookies.get('user'))
     return token
 }
 

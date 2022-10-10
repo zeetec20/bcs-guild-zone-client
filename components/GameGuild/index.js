@@ -18,8 +18,6 @@ const GameGuild = ({ game, selectAble = false, gameSelected = null, onSelect = n
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gameSelected])
 
-    console.log(game)
-
     return (
         <Box
             placeSelf='center'

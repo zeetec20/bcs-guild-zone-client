@@ -19,7 +19,6 @@ const DetailGuild = ({ guild, isOpen, onClose, join }) => {
     const toastRef = useRef()
 
     useEffect(() => {
-        console.log(guildServices.requestJoinApllied())
         setApplied(guildServices.requestJoinApllied().includes(guild.id))
         if (!authenticationServices.isAuthenticated()) setIsAnonymous(true)
         else setIsGamer(authenticationServices.user() ?? {}.type == 'GAMER')
