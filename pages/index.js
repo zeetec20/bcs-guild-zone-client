@@ -86,7 +86,7 @@ const HomePage = () => {
                     & FREE TO JOIN
                 </chakra.h1>
                 <chakra.p color={color.white} w='clamp(350px, 34vw, 600px)' fontSize={'clamp(13px, 1.2vw, 20px)'}>
-                    Guild Zone is a place for gather guild game bloackchain, we need your participation to contribute as Guild Manager or Gamer.
+                    Guild Zone is a place for gather guild game blockchain, we need your participation to contribute as Guild Manager or Gamer.
                 </chakra.p>
 
                 <Link href='/guild'>
