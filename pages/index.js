@@ -86,7 +86,7 @@ const HomePage = () => {
                     & FREE TO JOIN
                 </chakra.h1>
                 <chakra.p color={color.white} w='clamp(350px, 34vw, 600px)' fontSize={'clamp(13px, 1.2vw, 20px)'}>
-                    Guild Hub is a center where all the prominent gaming guilds
+                    Guild Zone is a center where all the prominent gaming guilds
                     gather. A guild is a group of gamers who form a team for
                     purposes of supporting, entertaining, and playing games.
                 </chakra.p>
