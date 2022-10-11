@@ -86,7 +86,7 @@ const ContactPage = () => {
                     textAlign='center'
                     mt='130px'
                 >
-                    Page
+                    Contact
                 </chakra.h1>
                 <chakra.p
                     w='50vw'
