@@ -157,9 +157,9 @@ const HomePage = () => {
                 </SimpleGrid>
             </chakra.div>
 
-            <chakra.div position='absolute' top='2000px'>
-                <chakra.img src={cloudDownImage.src} />
-                <chakra.img src={cloudUpImage.src} />
+            <chakra.div position='absolute' top='2000px' w='full'>
+                <chakra.img src={cloudDownImage.src} w='full' />
+                <chakra.img src={cloudUpImage.src } w='full' />
             </chakra.div>
 
 
