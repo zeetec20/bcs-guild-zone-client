@@ -1,9 +1,8 @@
-import { Box, HStack, chakra } from "@chakra-ui/react"
+import { Box, HStack, chakra, useToast, VStack } from "@chakra-ui/react"
 import { IoMdClose } from "react-icons/io"
 import { RiErrorWarningFill } from "react-icons/ri"
-import configs from 'configs'
+import { color, font } from 'configs'
 
-const { color, font } = configs
 /**
  * @param  {string} title
  * @param  {string} description
@@ -11,22 +10,25 @@ const { color, font } = configs
  * @param  {string} background=color.lightPurple
  * @param  {string} colorText=color.white
  */
-const toast = (title, description, close, background = color.lightPurple, colorText = color.white) => {
-    const toast = () => {
-        return (
-            <Box
-                rounded='xl'
-                bg={background}
-                py='12px'
-                px='10px'
-                w='fit-content'
-                ml='5px'
-                mt='5px'
-                display='flex'
-                overflow='hidden'
-            >
-                <chakra.div display='flex' alignItems='start'>
-                    <chakra.div ml='5px' mr='10px'>
+const Toast = ({ id, title, description, background = color.lightPurple, colorText = color.white }) => {
+    const toast = useToast()
+
+    return (
+        <Box
+            rounded='xl'
+            bg={background}
+            py='12px'
+            px='10px'
+            w='fit-content'
+            minW='250px'
+            ml='5px'
+            mt='5px'
+            display='flex'
+            overflow='hidden'
+        >
+            <HStack justifyContent='space-between' alignItems='start' w='full'>
+                <chakra.div display='flex'>
+                    <chakra.div ml='5px' mr='10px' mt='2px'>
                         <RiErrorWarningFill size='20px' color={colorText} />
                     </chakra.div>
                     <chakra.div>
@@ -47,15 +49,13 @@ const toast = (title, description, close, background = color.lightPurple, colorT
                             {description}
                         </chakra.h1>
                     </chakra.div>
-                    <chakra.div cursor='pointer' onClick={() => close()} >
-                        <IoMdClose size='18px' color={colorText} />
-                    </chakra.div>
                 </chakra.div>
-            </Box>
-        )
-    }
-
-    return toast
+                <chakra.div cursor='pointer' onClick={() => toast.close(id)} >
+                    <IoMdClose size='18px' color={colorText} />
+                </chakra.div>
+            </HStack>
+        </Box>
+    )
 }
 
-export default toast
+export default Toast

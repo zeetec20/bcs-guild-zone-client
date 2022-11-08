@@ -1,21 +1,18 @@
-import { Modal, ModalOverlay, ModalContent, Button, chakra, Box, useToast } from "@chakra-ui/react"
-import configs from 'configs'
+import { Modal, ModalOverlay, ModalContent, Button, chakra, Box } from "@chakra-ui/react"
+import { color, font } from 'configs'
 import { motion } from "framer-motion"
 import Image from 'next/image'
 import GameGuild from 'components/GameGuild'
-import guildServices from "services/guild"
+import * as guildServices from "services/guild"
 import { useEffect, useRef, useState } from "react"
-import authenticationServices from "services/authentication"
-import ToastCustom from 'components/Toast'
-
-const { color, font } = configs
+import * as authenticationServices from "services/authentication"
+import useCustomToast from "hooks/useCustomToast"
 
 const DetailGuild = ({ guild, isOpen, onClose, join }) => {
     const [applied, setApplied] = useState(false)
     const [isGamer, setIsGamer] = useState(false)
     const [isAnonymous, setIsAnonymous] = useState(false)
-    const toast = useToast()
-    const toastRef = useRef()
+    const toast = useCustomToast()
 
     useEffect(() => {
         setApplied(guildServices.requestJoinApllied().includes(guild.id))
@@ -26,11 +23,7 @@ const DetailGuild = ({ guild, isOpen, onClose, join }) => {
 
     const joinGuild = () => {
         if (isGamer || isAnonymous) join()
-        else toastRef.current = toast({
-            duration: 3000,
-            position: 'top-left',
-            render: ToastCustom('Join Guild', 'Only gamer can join guild', () => toast.close(toastRef.current))
-        })
+        else toast('Join guild', 'Only gamer can join guild')
     }
 
     return (
@@ -102,7 +95,7 @@ const DetailGuild = ({ guild, isOpen, onClose, join }) => {
                         onClick={applied ? undefined : joinGuild}
                         cursor={applied ? 'not-allowed' : undefined}
                     >
-                        Join Guild
+                        {applied? 'Applied' : 'Join Guild'}
                     </Button>
                     {applied && (
                         <chakra.p

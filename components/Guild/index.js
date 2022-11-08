@@ -1,14 +1,12 @@
-import { HStack, Box, chakra, useDisclosure } from '@chakra-ui/react'
+import { HStack, Box, chakra, useDisclosure, Skeleton } from '@chakra-ui/react'
 import Image from 'next/image'
-import configs from 'configs'
+import { color, font } from 'configs'
 import { FaMapMarkerAlt } from 'react-icons/fa'
 import DetailGuild from './detailGuild'
 import JoinGuild from './joinGuild'
 
-const { color, font } = configs
-
 const Guild = ({ guild }) => {
-    const openMember = Boolean(guild.openRecruitment)
+    const openMember = Boolean(guild?.openRecruitment)
     const { isOpen, onOpen, onClose } = useDisclosure()
     const join = useDisclosure()
     const showJoin = () => {
@@ -17,6 +15,7 @@ const Guild = ({ guild }) => {
             join.onOpen()
         }, 200);
     }
+    const skeleton = guild == undefined
 
     return (
         <>
@@ -47,60 +46,77 @@ const Guild = ({ guild }) => {
                     alignItems={'center'}
                     justifyContent='center'
                 >
-                    <chakra.div
-                        bg={openMember ? color.green : color.red}
-                        rounded='full'
-                        w='8px'
-                        h='8px'
-                        mr='8px'
-                    />
+                    {skeleton ? (
+                        <Skeleton h='18px' w='100px' rounded='md'></Skeleton>
+                    ) : (
+                        <>
+                            <chakra.div
+                                bg={openMember ? color.green : color.red}
+                                rounded='full'
+                                w='8px'
+                                h='8px'
+                                mr='8px'
+                            />
 
-                    <chakra.p
+                            <chakra.p
+                                color={color.white}
+                                fontFamily={font.inter}
+                                fontWeight={900}
+                                fontSize='13px'
+                            >
+                                {openMember ? 'Open Member' : 'Close Member'}
+                            </chakra.p>
+                        </>
+                    )}
+                </chakra.div>
+
+                <Skeleton rounded={'lg'} isLoaded={!skeleton}>
+                    <chakra.div position='relative' w='full' height='150px' mt='15px' rounded={'lg'} overflow='hidden'>
+                        {!skeleton && <Image src={guild?.banner} alt='banner' objectFit='cover' layout='fill' />}
+                    </chakra.div>
+                </Skeleton>
+
+                <Skeleton isLoaded={!skeleton}>
+                    <chakra.h1
+                        mt='15px'
                         color={color.white}
                         fontFamily={font.inter}
                         fontWeight={900}
-                        fontSize='13px'
+                        fontSize='27px'
                     >
-                        {openMember ? 'Open Member' : 'Close Member'}
+                        {guild?.name ?? '.'}
+                    </chakra.h1>
+                </Skeleton>
+                {skeleton ? (
+                    <Skeleton h='15px' mt='10px' w='90px'>
+                    </Skeleton>
+                ) : (
+                    <chakra.p
+                        fontFamily={font.inter}
+                        color={color.white}
+                        fontWeight={600}
+                        fontSize='14px'
+                        textTransform='capitalize'
+                    >
+                        <FaMapMarkerAlt style={{ display: 'inline', marginBottom: '-1px', marginRight: '3px', marginLeft: '2px' }} size='13px' /> {guild?.region ?? '.'}
                     </chakra.p>
-                </chakra.div>
-
-                <chakra.div position='relative' w='full' height='150px' mt='15px' rounded={'lg'} overflow='hidden'>
-                    <Image src={guild.banner} alt='banner' objectFit='cover' layout='fill' />
-                </chakra.div>
-
-                <chakra.h1
-                    mt='15px'
-                    color={color.white}
-                    fontFamily={font.inter}
-                    fontWeight={900}
-                    fontSize='27px'
-                >
-                    {guild.name}
-                </chakra.h1>
-                <chakra.p
-                    fontFamily={font.inter}
-                    color={color.white}
-                    fontWeight={600}
-                    fontSize='14px'
-                    textTransform='capitalize'
-                >
-                    <FaMapMarkerAlt style={{ display: 'inline', marginBottom: '-1px', marginRight: '3px', marginLeft: '2px' }} size='13px' /> {guild.region}
-                </chakra.p>
+                )}
 
                 <HStack mt='10px'>
-                    {guild.games.filter((e, index) => index < 4).map((game, index) => (
-                        <Box
-                            key={index}
-                            borderRadius={'full'}
-                            h='30px'
-                            w='30px'
-                            bgImage={game.images[0]}
-                            bgSize='cover'
-                        />
+                    {guild?.games.filter((e, index) => index < 4).map((game, index) => (
+                        <Box key={index}>
+                            <Image
+                                style={{ borderRadius: '100%' }}
+                                height='30px'
+                                width='30px'
+                                src={game.images[0]}
+                                objectFit='cover'
+                                alt='game icon'
+                            />
+                        </Box>
                     ))}
                     {
-                        guild.games.length > 4 && (
+                        guild?.games.length > 4 && (
                             <Box
                                 borderRadius={'full'}
                                 h='30px'
@@ -115,7 +131,7 @@ const Guild = ({ guild }) => {
                                 fontSize='12.5px'
                                 color={color.white}
                             >
-                                +{guild.games.length - 4}
+                                +{guild?.games.length - 4}
                             </Box>
                         )
                     }
@@ -138,12 +154,19 @@ const Guild = ({ guild }) => {
                         boxShadow: `0px 0px 15px ${color.pink}`
                     }}
                     onClick={onOpen}
+                    textAlign='center'
+                    display='flex'
+                    justifyContent='center'
                 >
-                    Open Guild
+                    {skeleton ? (
+                        <Skeleton h='30px' w='180px' rounded='lg'></Skeleton>
+                    ) : (
+                        <>Open Guild</>
+                    )}
                 </chakra.button>
             </Box>
-            <DetailGuild guild={guild} onClose={onClose} isOpen={isOpen} join={showJoin} />
-            <JoinGuild guild={guild} onClose={join.onClose} isOpen={join.isOpen} />
+            {!skeleton && <DetailGuild guild={guild} onClose={onClose} isOpen={isOpen} join={showJoin} />}
+            {!skeleton && <JoinGuild guild={guild} onClose={join.onClose} isOpen={join.isOpen} />}
         </>
     )
 }

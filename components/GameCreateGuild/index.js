@@ -1,9 +1,7 @@
 import { Box, chakra } from '@chakra-ui/react'
 import Image from 'next/image'
-import configs from 'configs'
+import { color, font } from 'configs'
 import { BsCheckLg } from 'react-icons/bs'
-
-const { color, font } = configs
 
 const Game = ({ game, isSelected, onClick }) => {
     isSelected = Boolean(isSelected)

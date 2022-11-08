@@ -1,61 +1,46 @@
 import Navbar from "components/Navbar"
-import { chakra, HStack, VStack, Input, Button, useToast } from '@chakra-ui/react'
-import configs from "configs"
+import { chakra, HStack, VStack, Input, Button } from '@chakra-ui/react'
+import { color, font } from "configs"
 import Footer from "components/Footer"
 import Image from 'next/image'
 import logoImage from 'assets/images/logo_pink.png'
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { useState } from "react"
-import auth from 'services/authentication'
+import * as auth from 'services/authentication'
 import loginValidator from 'helper/validator/loginValidator'
 import guildImage from 'assets/images/guild.png'
 import { useRouter } from "next/router"
 import LoginStyle from 'styles/Login.module.scss'
-
-const { color, font } = configs
+import useCustomToast from "hooks/useCustomToast"
+import useLogin from "hooks/useLogin"
 
 const LoginPage = () => {
-    const [isLoading, setIsLoading] = useState(false)
-    const toast = useToast()
+    const toast = useCustomToast()
     const router = useRouter()
+    const { mutate: login, isLoading } = useLogin()
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault()
-        if (!isLoading) {
-            setIsLoading(true)
-            const data = Object.fromEntries(new FormData(e.target))
-            const isValid = await loginValidator.validate(data).catch(err => {
-                setIsLoading(false)
 
-                toast({
-                    title: 'Login Failed',
-                    description: err.message,
-                    status: 'error',
-                    duration: 3000,
-                    isClosable: true,
-                    position: 'top-left'
+        const data = Object.fromEntries(new FormData(e.target))
+        loginValidator.validate(data).then(data => {
+            login(data, {
+                onSuccess: () => {
+                    toast('Login', 'Login are successfully', {
+                        duration: 3000
+                    })
+                    router.push('/')
+                },
+                onError: err => toast('Login failed', err.message, {
+                    background: color.red
                 })
             })
-
-            if (isValid) {
-                try {
-                    await auth.login(data.email, data.password)
-                    setIsLoading(false)
-                    router.push('/')
-                } catch (err) {
-                    setIsLoading(false)
-                    toast({
-                        title: 'Login Failed',
-                        description: err.message,
-                        status: 'error',
-                        duration: 3000,
-                        isClosable: true,
-                        position: 'top-left'
-                    })
-                }
-            }
-        }
+        }).catch(err => {
+            toast('Login failed', err.message, {
+                background: color.red
+            })
+        })
     }
 
     return (

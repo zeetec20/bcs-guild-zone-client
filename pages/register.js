@@ -1,6 +1,6 @@
 import Navbar from "components/Navbar"
-import { chakra, HStack, VStack, Input, Button, useToast, ButtonGroup } from '@chakra-ui/react'
-import configs from "configs"
+import { chakra, HStack, VStack, Input, Button, ButtonGroup } from '@chakra-ui/react'
+import { color, font } from "configs"
 import Footer from "components/Footer"
 import Image from 'next/image'
 import logoImage from 'assets/images/logo_pink.png'
@@ -12,71 +12,60 @@ import { useRouter } from "next/router"
 import RegisterStyle from 'styles/Register.module.scss'
 import registerGamerValidator from 'helper/validator/registerGamerValidator'
 import registerGuildManagerValidator from 'helper/validator/registerGuildManagerValidator'
-import authentication from "services/authentication"
-
-const { color, font } = configs
+import useRegisterGamer from "hooks/useRegisterGamer"
+import useRegisterGuildManager from "hooks/useRegisterGuildManager"
+import useCustomToast from "hooks/useCustomToast"
 
 const RegisterPage = () => {
     const [mode, setMode] = useState('GAMER')
-    const [isLoading, setIsLoading] = useState(false)
-    const toast = useToast()
     const router = useRouter()
     const isGamer = mode == 'GAMER'
     const isGuildManager = mode == 'GUILD_MANAGER'
     const form = useRef()
-    
+    const { mutate: registerGamer, isLoading: isLoadingGamer } = useRegisterGamer()
+    const { mutate: registerGuildManager, isLoading: isLoadingGuildmanager } = useRegisterGuildManager()
+    const isLoading = isLoadingGamer || isLoadingGuildmanager
+    const toast = useCustomToast()
+
+    const setForm = mode => {
+        if (!isLoading) setMode(mode)
+    }
+
     useEffect(() => {
         form.current.reset()
     }, [mode])
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault()
-        if (!isLoading) {
-            setIsLoading(true)
-            const data = Object.fromEntries(new FormData(e.target))
-            const isValid = await (isGamer ? registerGamerValidator : registerGuildManagerValidator).validate(data).catch(err => {
-                setIsLoading(false)
+        const data = Object.fromEntries(new FormData(e.target))
+        const validator = isGamer ? registerGamerValidator : registerGuildManagerValidator
 
-                toast({
-                    title: 'Register Failed',
-                    description: err.message,
-                    status: 'error',
-                    duration: 3000,
-                    isClosable: true,
-                    position: 'top-left'
-                })
-            })
-            if (isValid) {
-                try {
-                    if (isGamer) await authentication.registerGamer(data.name, data.email, data.password)
-                    if (isGuildManager) await authentication.registerGuildManager(data.email, data.password)
-                    toast({
-                        title: 'Register',
-                        description: 'Your account was created',
-                        status: 'success',
-                        duration: 3000,
-                        isClosable: true,
-                        position: 'top-left'
-                    })
-                    setIsLoading(false)
-
-                    setTimeout(() => {
-                        router.push('/login')
-                    }, 3000);
-                } catch (err) {
-                    setIsLoading(false)
-
-                    toast({
-                        title: 'Register Failed',
-                        description: err.message,
-                        status: 'error',
-                        duration: 3000,
-                        isClosable: true,
-                        position: 'top-left'
+        validator.validate(data)
+            .then(() => {
+                const onSuccess = () => {
+                    e.target.reset()
+                    toast('Register', 'Your account was created')
+                    setTimeout(() => router.push('/login'), 3000)
+                }
+                const onError = err => {
+                    toast('Register failed', err.message, {
+                        background: color.red
                     })
                 }
-            }
-        }
+
+                if (isGamer) registerGamer(data, {
+                    onSuccess,
+                    onError
+                })
+                if (isGuildManager) registerGuildManager(data, {
+                    onSuccess,
+                    onError
+                })
+            }).catch(err => {
+                toast('Register failed', err.message, {
+                    background: color.red
+                })
+            })
     }
 
     return (
@@ -125,7 +114,7 @@ const RegisterPage = () => {
                                 borderColor={color.pink}
                                 fontFamily={font.inter}
                                 color={isGamer ? color.white : color.darkBlue}
-                                onClick={() => setMode('GAMER')}
+                                onClick={() => setForm('GAMER')}
                             >
                                 Gamer
                             </Button>
@@ -136,7 +125,7 @@ const RegisterPage = () => {
                                 borderColor={color.pink}
                                 fontFamily={font.inter}
                                 color={isGuildManager ? color.white : color.darkBlue}
-                                onClick={() => setMode('GUILD_MANAGER')}
+                                onClick={() => setForm('GUILD_MANAGER')}
                             >
                                 Guild Manager
                             </Button>

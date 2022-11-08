@@ -13,26 +13,23 @@ import {
     PopoverTrigger,
     PopoverContent,
     PopoverBody,
-    Divider,
-    useToast
+    Divider
 } from '@chakra-ui/react';
 import {
     HamburgerIcon,
     CloseIcon
 } from '@chakra-ui/icons'
-import configs from 'configs'
+import { color, font } from 'configs'
 import LogoImage from 'assets/images/logo.png'
 import Image from 'next/image';
 import ButtonNav from './buttonNav';
 import { motion, useAnimationControls } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react';
-import authentication from 'services/authentication';
+import { useEffect, useState } from 'react';
+import * as authentication from 'services/authentication';
 import ProfileImage from 'assets/images/profile.png'
 import { useRouter } from 'next/router';
-import ToastCustom from 'components/Toast'
 import Link from 'next/link';
-
-const { color, font } = configs
+import useCustomToast from 'hooks/useCustomToast';
 
 const Navbar = ({ showLogo = true, authNavbar = false }) => {
     const controlAnimate = useAnimationControls()
@@ -40,12 +37,9 @@ const Navbar = ({ showLogo = true, authNavbar = false }) => {
     const user = authentication.user()
     const [isAuthenticated, setIsAuthenticated] = useState()
     const router = useRouter()
-    const toast = useToast()
-    const toastRef = useRef()
+    const toast = useCustomToast()
 
-    useEffect(() => {
-        setIsAuthenticated(authentication.isAuthenticated)
-    }, [])
+    useEffect(() => setIsAuthenticated(authentication.isAuthenticated), [])
 
     useEffect(() => {
         if (isOpen) document.body.style.overflow = 'hidden'
@@ -68,11 +62,7 @@ const Navbar = ({ showLogo = true, authNavbar = false }) => {
         authentication.logout()
         setIsAuthenticated(false)
 
-        toastRef.current = toast({
-            duration: 3000,
-            position: 'top-left',
-            render: ToastCustom('Sign Out', 'You are sign out from guild zone', () => toast.close(toastRef.current))
-        })
+        toast('Sign Out', 'You are sign out from guild zone')
         router.push('/')
     }
 
@@ -100,7 +90,7 @@ const Navbar = ({ showLogo = true, authNavbar = false }) => {
                     <chakra.div width='60px' height='60px' position='relative'>
                         {!authNavbar && showLogo && (
                             <Link href={'/'}>
-                                <Image src={LogoImage} layout='fill' objectFit='cover' alt='logo' />
+                                <Image src={LogoImage} layout='fill' objectFit='cover' alt='logo' style={{cursor: 'pointer'}} />
                             </Link>
                         )}
                     </chakra.div>

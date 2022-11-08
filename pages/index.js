@@ -1,8 +1,8 @@
-import { chakra, VStack, SimpleGrid } from '@chakra-ui/react'
+import { chakra, VStack, SimpleGrid, Button } from '@chakra-ui/react'
 import backgroundImage from 'assets/images/background.png'
 import robotImage from 'assets/images/robot.png'
 import Navbar from 'components/Navbar'
-import configs from 'configs'
+import { color, font } from 'configs'
 import { motion } from 'framer-motion'
 import { ChevronDownIcon } from '@chakra-ui/icons'
 import cloudDownImage from 'assets/images/cloud_down.png'
@@ -16,24 +16,24 @@ import scrollTo from 'helper/scrollTo'
 import { useEffect, useRef, useState } from 'react'
 import HomeStyle from 'styles/Home.module.scss'
 import Link from 'next/link'
-import guildzone from 'services/guildzone'
-
-const { color, font } = configs
+import useAllGuilds from 'hooks/useAllGuilds'
+import useCustomToast from 'hooks/useCustomToast'
 
 const HomePage = () => {
     const titleGuild = useRef()
-    const [guilds, setGuilds] = useState([])
     const scrollToGuild = () => {
         scrollTo(titleGuild.current.offsetTop - 70)
     }
-
-    useEffect(() => {
-        if (!guilds.length) guildzone.getAllGuilds().then(guilds => {
-            guilds = guilds.sort((a, b) => a.totalMember - b.totalMember).reverse().filter((guild, index) => index < 8)
-            setGuilds(guilds)
+    const toast = useCustomToast()
+    const { data: guilds } = useAllGuilds({
+        select: data => data.data
+            .sort((a, b) => a.totalMember - b.totalMember)
+            .reverse()
+            .filter((_, index) => index < 8),
+        onError: err => toast('Show guilds', err.message, {
+            background: color.red
         })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    })
 
     return (
         <chakra.div
@@ -153,13 +153,15 @@ const HomePage = () => {
                 </chakra.h1>
 
                 <SimpleGrid minChildWidth={'340px'} spacingX='0px' spacingY={'100px'} mt='100px' px='100px' justifyContent='center'>
-                    {guilds.map((g, index) => <Guild key={index} guild={g} />)}
+                    {
+                        (guilds ?? Array(8).fill(undefined)).map((g, index) => <Guild key={index} guild={g} />)
+                    }
                 </SimpleGrid>
             </chakra.div>
 
             <chakra.div position='absolute' top='2000px' w='full'>
                 <chakra.img src={cloudDownImage.src} w='full' />
-                <chakra.img src={cloudUpImage.src } w='full' />
+                <chakra.img src={cloudUpImage.src} w='full' />
             </chakra.div>
 
 

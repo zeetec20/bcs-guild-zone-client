@@ -1,10 +1,7 @@
-import { Box, chakra, HStack, VStack } from '@chakra-ui/react'
-import configs from 'configs'
+import { Box, chakra, HStack } from '@chakra-ui/react'
+import { color, font } from 'configs'
 import Image from 'next/image'
 import newsImage from 'assets/images/news.png'
-
-const { color, font } = configs
-
 
 const News = () => {
     return (

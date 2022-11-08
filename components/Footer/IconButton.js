@@ -1,7 +1,5 @@
 import { chakra } from '@chakra-ui/react'
-import configs from 'configs'
-
-const {color} = configs
+import { color } from 'configs'
 
 const IconButton = ({ children }) => {
     return (

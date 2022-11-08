@@ -1,7 +1,7 @@
 import Navbar from "components/Navbar"
 import { Box, chakra, HStack, Input, SimpleGrid, VStack, Textarea, Button, useToast, Spacer, Select, Show } from '@chakra-ui/react'
 import Footer from "components/Footer"
-import configs from "configs"
+import { color, font, regions } from "configs"
 import { BsFillImageFill } from "react-icons/bs"
 import backgroundImage from 'assets/images/background.png'
 import { useEffect, useRef, useState } from "react"
@@ -10,13 +10,12 @@ import { useRouter } from "next/router"
 import createGuildValidator from 'helper/validator/createGuildValidator'
 import completeGuildValidator from 'helper/validator/completeGuildValidator'
 import ToastCustom from 'components/Toast'
-import guildzone from "services/guildzone"
 import Game from "components/GameCreateGuild"
-import guild from "services/guild"
-import authentication from "services/authentication"
+import * as authentication from "services/authentication"
 import CreateGuildStyle from 'styles/CreateGuildStyle.module.scss'
-
-const { font, color, regions } = configs
+import useAllGames from "hooks/useAllGames"
+import useCustomToast from "hooks/useCustomToast"
+import useCreateGuild from "hooks/useCreateGuild"
 
 const Indicator = ({ number, isActive }) => {
     return (
@@ -41,102 +40,58 @@ const Indicator = ({ number, isActive }) => {
 }
 
 const CreateGuildPage = () => {
-    const [games, setGames] = useState([])
     const [selectedGame, setSelectedGame] = useState([])
-    const [isLoading, setIsLoading] = useState(false)
-    const [isLoading2, setIsLoading2] = useState(false)
-    const toast = useToast()
     const toastRef = useRef()
     const [page, setPage] = useState(1)
     const router = useRouter()
     const onlyImage = ['image/png', 'image/jpeg']
     const [submitData, setSubmitData] = useState()
+    const { data: games, isSuccess } = useAllGames()
+    const toast = useCustomToast()
+    const { mutate: createGuild, isLoading: isLoadingCreateGuild } = useCreateGuild()
 
-    useEffect(() => {
-        if (!games.length) guildzone.getAllGames().then(result => setGames(result)).catch(err => {
-            toastRef.current = toast({
-                duration: 3000,
-                position: 'top-left',
-                render: ToastCustom('Data Guild', err.message, () => toast.close(toastRef.current), color.red)
+    const handleSubmit = (e) => {
+        e.preventDefault()
+
+        const data = Object.fromEntries(new FormData(e.target))
+        createGuildValidator.validate(data).then(data => {
+            setSubmitData(data)
+            setPage(2)
+        }).catch(err => {
+            toast('Data Guild', err.message, {
+                background: color.red
             })
         })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-
-        if (!isLoading) {
-            setIsLoading(true)
-            const formData = new FormData(e.target)
-            const data = Object.fromEntries(formData)
-            const isValid = await createGuildValidator.validate(data).catch(err => {
-                setIsLoading(false)
-
-                toastRef.current = toast({
-                    duration: 3000,
-                    position: 'top-left',
-                    render: ToastCustom('Data Guild', err.message, () => toast.close(toastRef.current))
-                })
-            })
-
-            if (isValid) {
-                setSubmitData(isValid)
-                setIsLoading(false)
-                setPage(2)
-            }
-        }
     }
 
-    const handleSubmit2 = async (e) => {
+    const handleSubmit2 = (e) => {
         e.preventDefault()
 
-        if (!isLoading2) {
-            setIsLoading2(true)
-            const formData = new FormData(e.target)
-            const data = Object.fromEntries(formData)
-            const isValid = await completeGuildValidator.validate(data).catch(err => {
-                setIsLoading2(false)
-
-                toastRef.current = toast({
-                    duration: 3000,
-                    position: 'top-left',
-                    render: ToastCustom('Data Guild', err.message, () => toast.close(toastRef.current))
-                })
-            })
-
+        const data = Object.fromEntries(new FormData(e.target))
+        completeGuildValidator.validate(data).then(data => {
             if (!selectedGame.length) {
-                toastRef.current = toast({
-                    duration: 3000,
-                    position: 'top-left',
-                    render: ToastCustom('Data Guild', 'at least 1 game must selected', () => toast.close(toastRef.current))
+                toast('Data guild', 'at least 1 game must selected', {
+                    background: color.red
                 })
-                setIsLoading2(false)
-                return
             }
 
-            if (isValid) {
-                try {
-                    const formData = new FormData()
-                    const data = { ...isValid, ...submitData, games: selectedGame.join(', ') }
-                    Object.keys(data).forEach(key => {
-                        formData.append(key, data[key])
-                    })
-                    const result = await guild.createGuild(formData)
-                    await authentication.refreshUser()
+            const formData = new FormData()
+            const datas = { ...data, ...submitData, games: selectedGame.join(', ') }
+            Object.keys(datas).forEach(key => formData.append(key, datas[key]))
 
-                    setIsLoading2(false)
-                    router.push(`/guild/${result.id}`)
-                } catch (err) {
-                    toastRef.current = toast({
-                        duration: 3000,
-                        position: 'top-left',
-                        render: ToastCustom('Data Guild', err.message, () => toast.close(toastRef.current), color.red)
+            createGuild(formData, {
+                onSuccess: async () => router.push(`/guild/${result.id}`),
+                onError: err => {
+                    toast('Data guild', err.message, {
+                        background: color.red
                     })
-                    setIsLoading2(false)
                 }
-            }
-        }
+            })
+        }).catch(err => {
+            toast('Data guild', err.message, {
+                background: color.red
+            })
+        })
     }
 
     const [isAnyFileBannerGuild, setIsAnyFileBannerGuild] = useState(null)
@@ -523,7 +478,6 @@ const CreateGuildPage = () => {
                                     fontSize='17px'
                                     fontWeight={800}
                                     fontFamily={font.inter}
-                                    isLoading={isLoading}
                                 >
                                     Create Guild
                                 </Button>
@@ -744,26 +698,33 @@ const CreateGuildPage = () => {
                                             fontWeight={700}
                                             px='10px'
                                         >
-                                            {selectedGame.length} 
+                                            {selectedGame.length}
                                             <Show breakpoint="(min-width: 741px)">
-                                            &nbsp;Selected
+                                                &nbsp;Selected
                                             </Show>
                                         </Box>
                                     )}
                                 </HStack>
-                                <SimpleGrid mt='15px !important' py='25px' px='15px' minChildWidth='260px' spacingY='35px' boxShadow={`0px 0px 20px -10px ${color.grey}`} rounded='xl' w='full' position='relative' overflow='auto'>
-                                    {games.map((g, index) => {
-                                        const isSelected = selectedGame.filter(e => e == g.id).length
-                                        return (
-                                            <Game
-                                                key={index}
-                                                game={g}
-                                                isSelected={isSelected}
-                                                onClick={() => setSelectedGame(isSelected ? [...selectedGame.filter(e => e != g.id)] : [...selectedGame, g.id])}
-                                            />
+                                {
+                                    isSuccess ?
+                                        (
+                                            <SimpleGrid mt='15px !important' py='25px' px='15px' minChildWidth='260px' spacingY='35px' boxShadow={`0px 0px 20px -10px ${color.grey}`} rounded='xl' w='full' position='relative' overflow='auto'>
+                                                {games.map((g, index) => {
+                                                    const isSelected = selectedGame.filter(e => e == g.id).length
+                                                    return (
+                                                        <Game
+                                                            key={index}
+                                                            game={g}
+                                                            isSelected={isSelected}
+                                                            onClick={() => setSelectedGame(isSelected ? [...selectedGame.filter(e => e != g.id)] : [...selectedGame, g.id])}
+                                                        />
+                                                    )
+                                                })}
+                                            </SimpleGrid>
+                                        ) : (
+                                            <></>
                                         )
-                                    })}
-                                </SimpleGrid>
+                                }
                             </VStack>
 
                             <HStack justifyContent='end' mb='40px' mx='40px' mt='40px'>
@@ -779,7 +740,7 @@ const CreateGuildPage = () => {
                                     fontSize='17px'
                                     fontWeight={800}
                                     fontFamily={font.inter}
-                                    isLoading={isLoading2}
+                                    isLoading={isLoadingCreateGuild}
                                 >
                                     Complete Your Guild
                                 </Button>

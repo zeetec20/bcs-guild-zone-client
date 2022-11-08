@@ -1,72 +1,54 @@
 import { Modal, ModalOverlay, ModalContent, Button, chakra, SimpleGrid, Box, Input, VStack, Textarea, useToast } from "@chakra-ui/react"
-import configs from 'configs'
+import { color, font } from 'configs'
 import { motion } from "framer-motion"
 import Image from 'next/image'
 import GameGuild from 'components/GameGuild'
-import authenticationService from "services/authentication"
-import guildService from "services/guild"
+import * as authenticationService from "services/authentication"
+import * as guildService from "services/guild"
 import { useRef, useState } from "react"
 import joinGuildValidator from 'helper/validator/joinGuildValidator'
 import ToastCustom from 'components/Toast'
 import joinGuildAnonnymousValidator from 'helper/validator/joinGuildAnonnymousValidator'
-
-const { color, font } = configs
+import useCustomToast from "hooks/useCustomToast"
+import useJoinGuild from "hooks/useJoinGuild"
+import useJoinGuildAnonnymous from "hooks/useJoinGuildAnonnymous"
 
 const JoinGuild = ({ guild, isOpen, onClose }) => {
     const isAuthenticated = authenticationService.isAuthenticated()
     const [recentGame, setRecentGame] = useState()
-    const [isLoading, setIsLoading] = useState()
-    const toast = useToast()
-    const toastRef = useRef()
+    const toast = useCustomToast()
+    const { mutate: joinGuild, isLoading: isLoadingGuild } = useJoinGuild()
+    const { mutate: joinGuildAnonnymous, isLoading: isLoadingGuildAnon } = useJoinGuildAnonnymous()
 
-    const onSubmit = async e => {
+    const onSubmit = e => {
         e.preventDefault()
-        
-        if (!isLoading) {
-            setIsLoading(true)
-            const validaator = isAuthenticated ? joinGuildValidator : joinGuildAnonnymousValidator
-            const data = Object.fromEntries(new FormData(e.target))
-            const isValid = await validaator.validate(data).catch(err => {
-                setIsLoading(false)
 
-                toastRef.current = toast({
-                    duration: 3000,
-                    position: 'top-left',
-                    render: ToastCustom('Join Guild', err.message, () => toast.close(toastRef.current), color.red)
-                })
+        const validator = isAuthenticated ? joinGuildValidator : joinGuildAnonnymousValidator
+        const data = Object.fromEntries(new FormData(e.target))
+
+        validator.validate(data).then(data => {
+            console.log(data, { ...data, guild: guild.id, recentGame })
+            if (recentGame == undefined) return toast('Join guild', 'recent game must be choosed', {
+                background: color.red
             })
 
-            if (recentGame == undefined) {
-                toastRef.current = toast({
-                    duration: 3000,
-                    position: 'top-left',
-                    render: ToastCustom('Join Guild', 'recent game must be choosed', () => toast.close(toastRef.current), color.red)
-                })
-
-                setIsLoading(false)
-                return
-            } else if (isValid) {
-                try {
-                    if (isAuthenticated) await guildService.joinGuild(data.experience, guild.id, recentGame)
-                    else await guildService.joinGuildAnonnymous(data.name, data.email, data.experience, guild.id, recentGame)
-
-                    toastRef.current = toast({
-                        duration: 3000,
-                        position: 'top-left',
-                        render: ToastCustom('Join Guild', 'Your request join was sending', () => toast.close(toastRef.current))
-                    })
-                    setIsLoading(false)
-                    onClose()
-                } catch (err) {
-                    setIsLoading(false)
-                    toastRef.current = toast({
-                        duration: 3000,
-                        position: 'top-left',
-                        render: ToastCustom('Join Guild', err.message, () => toast.close(toastRef.current), color.red)
-                    })
-                }
+            const onSuccess = () => {
+                toast('Join guild', 'Your request join was sending')
+                onClose()
             }
-        }
+            const onError = err => {
+                toast('Join guild', err.message, {
+                    background: color.red
+                })
+            }
+
+            if (isAuthenticated) joinGuild({ ...data, guild: guild.id, recentGame }, { onSuccess, onError })
+            else joinGuildAnonnymous({ ...data, guild: guild.id, recentGame }, { onSuccess, onError })
+        }).catch(err => {
+            toast('Join guild', err.message, {
+                background: color.red
+            })
+        })
     }
 
     return (
@@ -262,6 +244,7 @@ const JoinGuild = ({ guild, isOpen, onClose }) => {
                                 boxShadow: `0px 0px 22px ${color.pink}`
                             }}
                             transition={{ ease: 'ease-in-out', duration: 0.3, repeat: 'none' }}
+                            isLoading={isLoadingGuild || isLoadingGuildAnon}
                         >
                             Join Guild
                         </Button>

@@ -1,8 +1,8 @@
 import { useRouter } from "next/router"
 import { useEffect, useRef, useState } from "react"
-import guildService from 'services/guild'
+import * as guildService from 'services/guild'
 import { Box, Button, chakra, Flex, HStack, Show, SimpleGrid, Skeleton, Text, VStack } from '@chakra-ui/react'
-import configs from 'configs'
+import { color, font, usersGuild } from 'configs'
 import backgroundImage from 'assets/images/background_right.png'
 import Image from "next/image"
 import { MdSpaceDashboard } from 'react-icons/md'
@@ -11,81 +11,8 @@ import Navbar from "components/Navbar"
 import GameGuild from "components/GameGuild"
 import Footer from "components/Footer"
 import DashboardGuildStyle from 'styles/DashboardGuild.module.scss'
-
-const { color, font } = configs
-
-const players = [
-    {
-        name: 'Gorge777',
-        avatar: '/avatar/avatar1.jpeg',
-        earning: 300,
-    },
-    {
-        name: 'GrandBlash',
-        avatar: '/avatar/avatar2.jpeg',
-        earning: 453,
-    },
-    {
-        name: 'Alexxxx',
-        avatar: '/avatar/avatar3.jpeg',
-        earning: 311,
-    },
-    {
-        name: 'NeverLose',
-        avatar: '/avatar/avatar4.jpeg',
-        earning: 220,
-    },
-    {
-        name: 'JustPl4y',
-        avatar: '/avatar/avatar5.jpeg',
-        earning: 309,
-    },
-    {
-        name: 'Steve',
-        avatar: '/avatar/avatar6.jpeg',
-        earning: 174,
-    },
-    {
-        name: 'Vicky',
-        avatar: '/avatar/avatar7.jpeg',
-        earning: 199,
-    },
-    {
-        name: 'V1ctor',
-        avatar: '/avatar/avatar8.jpeg',
-        earning: 203,
-    },
-    {
-        name: 'Firman',
-        avatar: '/avatar/avatar9.jpeg',
-        earning: 268,
-    },
-    {
-        name: 'Kazuma',
-        avatar: '/avatar/avatar10.jpeg',
-        earning: 399,
-    },
-    {
-        name: 'Izaya',
-        avatar: '/avatar/avatar11.jpeg',
-        earning: 233,
-    },
-    {
-        name: 'Harry',
-        avatar: '/avatar/avatar12.jpeg',
-        earning: 399,
-    },
-    {
-        name: 'R345',
-        avatar: '/avatar/avatar13.jpeg',
-        earning: 399,
-    },
-    {
-        name: 'Prometues',
-        avatar: '/avatar/avatar14.jpeg',
-        earning: 399,
-    }
-]
+import useGuild from "hooks/useGuild"
+import useCustomToast from "hooks/useCustomToast"
 
 const ButtonSidebar = ({ text, icon, isActive }) => {
     return (
@@ -146,15 +73,17 @@ const Player = ({ avatar, name, earningDay }) => {
 
 const DashboardGuild = () => {
     const router = useRouter()
-    const [guild, setGuild] = useState()
     const { id } = router.query
     const ref = useRef()
     const { events } = useDraggable(ref)
-
-    useEffect(() => {
-        if (router.isReady) guildService.getGuild(id).then(guild => setGuild(guild))
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [router.isReady])
+    const toast = useCustomToast()
+    const { data: guild } = useGuild(id, {
+        enabled: !!id,
+        // enabled: false,
+        onError: err => toast('Show guild', err.message, {
+            background: color.red
+        })
+    })
 
     const textLorem = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
 
@@ -163,7 +92,7 @@ const DashboardGuild = () => {
             <Navbar showLogo={false} />
             <HStack w='full' minH='100vh' bg={color.purple} spacing='0' alignItems='start'>
                 <Show breakpoint="(min-width: 1200px)">
-                    <Box w='20vw' bg={color.darkBlue} bgImg={backgroundImage.src} bgSize='cover' bgPosition='center' h='full' position='fixed' zIndex='2' >
+                    <Box w='19vw' bg={color.darkBlue} bgImg={backgroundImage.src} bgSize='cover' bgPosition='center' h='full' position='fixed' zIndex='2' >
                         <Box mt='25px' mx='clamp(10px, 1.8vw, 30px)'>
                             <Box
                                 w='full'
@@ -191,6 +120,7 @@ const DashboardGuild = () => {
                                     fontSize='20px'
                                     fontWeight={900}
                                     fontFamily={font.inter}
+                                    textAlign='center'
                                 >
                                     {guild ? guild.name : 'Guild'}
                                 </chakra.h1>
@@ -238,7 +168,7 @@ const DashboardGuild = () => {
                                 <Image src={guild.banner} layout='fill' objectFit='cover' alt='banner' />
                             </chakra.div>
                         ) : (
-                            <Skeleton w='full' mx='30px' h='350px' />
+                            <Skeleton w='full' rounded='3xl' h='350px' />
                         )}
                     </chakra.div>
 
@@ -320,7 +250,7 @@ const DashboardGuild = () => {
 
                     <HStack w='full' spacing='30px' pl='50px' overflow='hidden' mt='15px' {...events} ref={ref}>
                         {
-                            players
+                            usersGuild
                                 .sort((a, b) => a.earning - b.earning)
                                 .map((player, index) => <Player key={index} name={player.name} earningDay={player.earning} avatar={player.avatar} />)
                                 .reverse()
@@ -338,16 +268,14 @@ const DashboardGuild = () => {
                         Games
                     </chakra.h1>
 
-                    <Flex flexWrap='wrap' mx='50px' mt='20px' mb='50px'>
-                        {guild != null ? (
-                            guild.games.map((game, index) => <GameGuild key={index} game={game} selectAble={false} />)
-                        ) : (
-                            <></>
-                        )}
+                    <Flex flexWrap='wrap' mx='50px' mt='20px' mb='50px' justifyContent='space-between'>
+                        {(guild?.games ?? Array(4).fill(undefined)).map((game, index) => <GameGuild key={index} game={game} selectAble={false} styles={{mx: '30px'}} />)}
                     </Flex>
                 </Box>
             </HStack>
-            <Footer />
+            <chakra.div w='calc(100vw - 19vw)' float='right'>
+                <Footer />
+            </chakra.div>
         </chakra.div>
     )
 }

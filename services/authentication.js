@@ -1,7 +1,5 @@
 import Cookies from 'js-cookie'
-import configs from 'configs'
-
-const { env } = configs
+import { axios } from 'configs'
 
 const user = () => {
     const user = Cookies.get('user')
@@ -10,20 +8,18 @@ const user = () => {
 }
 
 const refreshUser = async () => {
-    const response = await fetch(`${env.domain}/user`, {
+    const { data, status } = await axios({
+        url: 'user',
         method: 'GET',
         headers: {
             Authorization: `Bearer ${getToken()}`,
             Accept: 'application/json',
             'Content-Type': 'application/json',
-
         }
     })
-    
-    const json = await response.json()
-    if (response.status != 200) throw new Error(json.data.message)
+    if (status != 200) throw new Error(data.data.message)
 
-    Cookies.set('user', JSON.stringify(json.data), {expires: 7})
+    Cookies.set('user', JSON.stringify(data.data), { expires: 7 })
 }
 
 const getToken = () => {
@@ -48,33 +44,29 @@ const logout = () => {
 const login = async (email, password) => {
     const loginError = new Error('Email or password is incorrect')
 
-    const response = await fetch(`${env.domain}/login`, {
+    const { data: lData, status: lStatus } = await axios({
+        url: 'login',
         method: 'POST',
+        data: { email, password },
         headers: {
-            'Accept': 'application/json',
+            Accept: 'application/json',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password })
     })
+    if (lStatus != 200) throw loginError
 
-    if (response.status != 200) throw loginError
-
-    const json = await response.json()
-    const responseUser = await fetch(`${env.domain}/user`, {
+    const { data: uData, status: uStatus } = await axios({
+        url: 'user',
         method: 'GET',
         headers: {
-            Authorization: `Bearer ${json.data.access_token}`,
+            Authorization: `Bearer ${lData.data.access_token}`,
             Accept: 'application/json',
-            'Content-Type': 'application/json',
-
         }
     })
+    if (uStatus != 200) throw loginError
 
-    if (responseUser.status != 200) throw loginError
-    const jsonUser = await responseUser.json()
-
-    Cookies.set('user', JSON.stringify(jsonUser.data), { expires: 7 })
-    Cookies.set('token', json.data.access_token, { expires: 7 })
+    Cookies.set('user', JSON.stringify(uData.data), { expires: 7 })
+    Cookies.set('token', lData.data.access_token, { expires: 7 })
 }
 
 /**
@@ -84,17 +76,16 @@ const login = async (email, password) => {
  * @returns {Promise}
  */
 const registerGamer = async (name, email, password) => {
-
-    const response = await fetch(`${env.domain}/gamer/register`, {
+    const { data, status } = await axios({
+        url: 'gamer/register',
         method: 'POST',
+        data: { name, email, password },
         headers: {
-            'Accept': 'application/json',
+            Accept: 'application/json',
             'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ name, email, password })
+        }
     })
-
-    if (response.status != 200) throw new Error((await response.json()).data.message)
+    if (status != 200) throw new Error(data.data.message)
 }
 
 /**
@@ -103,19 +94,19 @@ const registerGamer = async (name, email, password) => {
  * @returns {Promise}
  */
 const registerGuildManager = async (email, password) => {
-    const response = await fetch(`${env.domain}/guild-manager/register`, {
+    const { data, status } = await axios({
+        url: 'guild-manager/register',
         method: 'POST',
+        data: { email, password },
         headers: {
-            'Accept': 'application/json',
+            Accept: 'application/json',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password })
     })
-
-    if (response.status != 200) throw new Error((await response.json()).data.message)
+    if (status != 200) throw new Error(data.data.message)
 }
 
-const authentication = {
+export {
     login,
     user,
     logout,
@@ -125,4 +116,3 @@ const authentication = {
     refreshUser,
     isAuthenticated
 }
-export default authentication

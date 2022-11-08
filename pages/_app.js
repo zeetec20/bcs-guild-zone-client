@@ -1,15 +1,9 @@
 import { ChakraProvider, extendTheme } from "@chakra-ui/react"
-import { StepsStyleConfig as Steps } from 'chakra-ui-steps';
 import Head from "next/head";
 import { useEffect } from "react";
-import authentication from "services/authentication";
+import { QueryClient, QueryClientProvider } from "react-query";
+import * as authentication from "services/authentication";
 import 'styles/globals.scss'
-
-const theme = extendTheme({
-    components: {
-        Steps,
-    },
-})
 
 const App = ({ Component, pageProps }) => {
     useEffect(() => {
@@ -17,11 +11,13 @@ const App = ({ Component, pageProps }) => {
     }, [])
 
     return (
-        <ChakraProvider theme={theme}>
+        <ChakraProvider>
             <Head>
                 <title>Guild Zone</title>
             </Head>
-            <Component {...pageProps} />
+            <QueryClientProvider client={new QueryClient()}>
+                <Component {...pageProps} />
+            </QueryClientProvider>
         </ChakraProvider>
     )
 }

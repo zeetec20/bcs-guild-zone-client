@@ -1,60 +1,45 @@
 import Navbar from "components/Navbar"
-import { Box, chakra, Input, SimpleGrid, VStack, Textarea, Button, useToast } from '@chakra-ui/react'
+import { Box, chakra, Input, SimpleGrid, VStack, Textarea, Button } from '@chakra-ui/react'
 import Footer from "components/Footer"
-import configs from "configs"
+import { color, font } from "configs"
 import { FaDiscord, FaFacebook, FaInstagram, FaMedium } from "react-icons/fa"
 import backgroundImage from 'assets/images/background.png'
 import { motion } from "framer-motion"
-import { useRef, useState } from "react"
+import { useRef } from "react"
 import ContactStyle from 'styles/Contact.module.scss'
 import sendMessageValidator from 'helper/validator/sendMessageValidator'
-import guildzone from "services/guildzone"
-import ToastCustom from 'components/Toast'
-
-const { font, color } = configs
+import useSendMessage from "hooks/useSendMessage"
+import useCustomToast from "hooks/useCustomToast"
 
 const ContactPage = () => {
-    const [isLoading, setIsLoading] = useState(false)
-    const toast = useToast()
-    const toastRef = useRef()
+    const toast = useCustomToast()
+    const { mutate: sendMessage, isLoading } = useSendMessage()
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault()
-        if (!isLoading) {
-            setIsLoading(true)
-            const data = Object.fromEntries(new FormData(e.target))
-            const isValid = await sendMessageValidator.validate(data).catch(err => {
-                setIsLoading(false)
 
-                toastRef.current = toast({
-                    duration: 3000,
-                    position: 'top-left',
-                    render: ToastCustom('Send Failed', err.message, () => toast.close(toastRef.current), color.red)
-                })
-            })
-
-            if (isValid) {
-                try {
-                    await guildzone.sendMessage(data.name, data.email, data.message)
-                    setIsLoading(false)
-
-                    toastRef.current = toast({
-                        duration: 3000,
-                        position: 'top-left',
-                        render: ToastCustom('Send Message', 'Message was sending to guild zone', () => toast.close(toastRef.current))
-                    })
+        const data = Object.fromEntries(new FormData(e.target))
+        if (!isLoading) sendMessageValidator.validate(data).then(() => {
+            sendMessage({
+                name: data.name,
+                email: data.email,
+                message: data.message
+            }, {
+                onSuccess: () => {
                     e.target.reset()
-                } catch (err) {
-                    setIsLoading(false)
-
-                    toastRef.current = toast({
-                        duration: 3000,
-                        position: 'top-left',
-                        render: ToastCustom('Send Failed', err.message, () => toast.close(toastRef.current), color.red)
+                    toast('Send message', 'Message was sending to guild zone')
+                },
+                onError: err => {
+                    toast('Send failed', err.message, {
+                        background: color.red
                     })
                 }
-            }
-        }
+            })
+        }).catch(err => {
+            toast('Send failed', err.message, {
+                background: color.red
+            })
+        })
     }
 
     return (

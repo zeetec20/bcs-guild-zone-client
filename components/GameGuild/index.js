@@ -1,17 +1,16 @@
-import { Box, chakra, Text } from '@chakra-ui/react'
+import { Box, chakra, Skeleton, Text, StyleProps } from '@chakra-ui/react'
 import Image from 'next/image'
-import configs from 'configs'
+import { color, font } from 'configs'
 import { BsCheckLg } from 'react-icons/bs'
 import { useEffect, useState } from 'react'
 
-const { color, font } = configs
-
-const GameGuild = ({ game, selectAble = false, gameSelected = null, onSelect = null }) => {
+const GameGuild = ({ game, selectAble = false, gameSelected = null, onSelect = null, styles = {}}) => {
     const [isSelected, setIsSelected] = useState(false)
+    const skeleton = game == undefined
 
     useEffect(() => {
         if (gameSelected != null && game.id != gameSelected) setIsSelected(false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gameSelected])
 
     return (
@@ -33,6 +32,7 @@ const GameGuild = ({ game, selectAble = false, gameSelected = null, onSelect = n
             boxShadow={isSelected ? `0px 0px 20px ${color.pink}` : `0px 0px 5px ${color.pink}`}
             border={isSelected ? `1.5px solid ${color.pink}` : undefined}
             mb='25px'
+            {...styles}
         >
             {isSelected && (
                 <Box
@@ -52,47 +52,57 @@ const GameGuild = ({ game, selectAble = false, gameSelected = null, onSelect = n
                 </Box>
             )}
             <chakra.div px='13px' mb='10px'>
-                <chakra.div position='relative' w='full' height='150px' mt='13px' rounded={'lg'} overflow='hidden'>
-                    <Image src={game.images[0]} alt='banner' objectFit='cover' layout='fill' />
-                </chakra.div>
+                <Skeleton isLoaded={!skeleton} rounded={'lg'}>
+                    <chakra.div position='relative' w='full' height='150px' mt='13px' rounded={'lg'} overflow='hidden'>
+                        <Image src={game?.images[0]} alt='banner' objectFit='cover' layout='fill' />
+                    </chakra.div>
+                </Skeleton>
 
-                <chakra.h1
-                    mt='20px'
-                    color={color.white}
-                    fontFamily={font.inter}
-                    fontWeight={900}
-                    fontSize='21px'
-                >
-                    {game.name}
-                </chakra.h1>
-                <Text
-                    noOfLines={4}
-                    color={color.white}
-                    fontFamily={font.inter}
-                    fontSize='12px'
-                    mt='3px'
-                >
-                    {game.description}
-                </Text>
+                <Skeleton isLoaded={!skeleton}>
+                    <chakra.h1
+                        mt='20px'
+                        color={color.white}
+                        fontFamily={font.inter}
+                        fontWeight={900}
+                        fontSize='21px'
+                    >
+                        {game?.name}
+                    </chakra.h1>
+                </Skeleton>
+                <Skeleton isLoaded={!skeleton}>
+                    <Text
+                        noOfLines={4}
+                        color={color.white}
+                        fontFamily={font.inter}
+                        fontSize='12px'
+                        mt='3px'
+                    >
+                        {game?.description ?? '&nbsp;'}
+                    </Text>
+                </Skeleton>
 
                 <chakra.div display='flex' flexWrap='wrap' mt='20px' mb='0px'>
-                    {game.genre.map((g, index) => (
-                        <Box
-                            key={index}
-                            color={color.white}
-                            fontSize='12px'
-                            w='fit-content'
-                            rounded='full'
-                            px='10px'
-                            py='0px'
-                            bg={color.pink}
+                    {(game?.genre ?? Array.from(Array(3).keys())).map((g, index) => (
+                        <Skeleton
                             mr='5px'
                             mb='10px'
-                            fontFamily={font.inter}
-                            fontWeight={700}
+                            key={index}
+                            isLoaded={!skeleton}
                         >
-                            {g}
-                        </Box>
+                            <Box
+                                color={color.white}
+                                fontSize='12px'
+                                w='fit-content'
+                                rounded='full'
+                                px='10px'
+                                py='0px'
+                                bg={color.pink}
+                                fontFamily={font.inter}
+                                fontWeight={700}
+                            >
+                                {g}
+                            </Box>
+                        </Skeleton>
                     ))}
                 </chakra.div>
             </chakra.div>

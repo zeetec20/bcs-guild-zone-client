@@ -1,21 +1,19 @@
 import Navbar from "components/Navbar"
-import { chakra, SimpleGrid, useToast } from '@chakra-ui/react'
+import { chakra, SimpleGrid } from '@chakra-ui/react'
 import Footer from "components/Footer"
-import configs from "configs"
+import { font, color } from "configs"
 import backgroundImage from 'assets/images/background.png'
-import { useEffect, useRef, useState } from "react"
-import guildzone from "services/guildzone"
 import Guild from "components/Guild"
-
-const { font, color } = configs
+import useAllGuilds from "hooks/useAllGuilds"
+import useCustomToast from "hooks/useCustomToast"
 
 const GuildPage = () => {
-    const [guilds, setGuilds] = useState([])
-
-    useEffect(() => {
-        if (!guilds.length) guildzone.getAllGuilds().then(guilds => setGuilds(guilds))
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    const toast = useCustomToast()
+    const { data: guilds } = useAllGuilds({
+        onError: err => toast('Show guilds', err.message, {
+            background: color.red
+        })
+    })
 
     return (
         <chakra.div
@@ -50,22 +48,9 @@ const GuildPage = () => {
                 </chakra.h1>
 
                 {
-                    guilds.length ? (
-                        <SimpleGrid minChildWidth='330px' w='full' mt='100px' px='50px'>
-                            {guilds.map((g, index) => <Guild guild={g} key={index} />)}
-                        </SimpleGrid>
-                    ) : (
-                        <chakra.h1
-                            color={color.white}
-                            fontFamily={font.inter}
-                            fontSize='20px'
-                            fontWeight={900}
-                            mt='20vh'
-                            mb='50vh'
-                        >
-                            Content Loading...
-                        </chakra.h1>
-                    )
+                    <SimpleGrid minChildWidth='330px' w='full' mt='100px' px='50px'>
+                        {(guilds ?? Array(8).fill(undefined)).map((g, index) => <Guild guild={g} key={index} />)}
+                    </SimpleGrid>
                 }
 
                 <Footer marginTop={'200px'} />

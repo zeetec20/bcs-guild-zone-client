@@ -1,8 +1,6 @@
-import authentication from './authentication'
-import configs from 'configs'
+import * as authentication from './authentication'
+import { axios } from 'configs'
 import Cookies from 'js-cookie'
-
-const { env } = configs
 
 /**
  * @param  {FormData} formData
@@ -10,69 +8,67 @@ const { env } = configs
 const createGuild = async (formData) => {
     const token = authentication.getToken()
 
-    const response = await fetch(`${env.domain}/guild-manager/create-guild`, {
+    const { data, status } = await axios({
+        url: 'guild-manager/create-guild',
         method: 'POST',
+        data: formData,
         headers: {
             Authorization: `Bearer ${token}`,
-            'Accept': 'application/json',
+            Accept: 'application/json',
         },
-        body: formData
     })
+    if (status != 200) throw new Error(data.data.message)
+    await authentication.refreshUser()
 
-    const json = await response.json()
-    if (response.status != 200) throw new Error(json.data.message)
-
-    return json.data
+    return data
 }
 
 const getGuild = async (id) => {
     const token = authentication.getToken()
 
-    const response = await fetch(`${env.domain}/guilds/${id}`, {
+    const { data, status } = await axios({
+        url: `guilds/${id}`,
         method: 'GET',
         headers: {
             Authorization: `Bearer ${token}`,
-            'Accept': 'application/json',
+            Accept: 'application/json',
         }
     })
+    if (status != 200) throw new Error(data.data.message)
 
-    const json = await response.json()
-    if (response.status != 200) throw new Error(json.data.message)
-
-    return json.data
+    return data
 }
 
 const joinGuild = async (experience, guild, recentGame) => {
     const token = authentication.getToken()
 
-    const response = await fetch(`${env.domain}/guild/${guild}/join`, {
+    const { data, status } = await axios({
+        url: `guild/${guild}/join`,
         method: 'POST',
+        data: { experience, recent_game: recentGame },
         headers: {
             Authorization: `Bearer ${token}`,
-            'Accept': 'application/json',
+            Accept: 'application/json',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ experience, recent_game: recentGame })
     })
+    if (status != 200) throw new Error(data.data.message)
 
-    const json = await response.json()
-    if (response.status != 200) throw new Error(json.data.message)
     Cookies.set('requestJoin', JSON.stringify([...JSON.parse(Cookies.get('requestJoin') ?? '[]'), guild]))
-
 }
 
 const joinGuildAnonnymous = async (name, email, experience, guild, recentGame) => {
-    const response = await fetch(`${env.domain}/guild/${guild}/join-anonnymous`, {
+    const { data, status } = await axios({
+        url: `guild/${guild}/join-anonnymous`,
         method: 'POST',
+        data: { name, email, experience, recent_game: recentGame },
         headers: {
-            'Accept': 'application/json',
+            Accept: 'application/json',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ name, email, experience, recent_game: recentGame })
     })
 
-    const json = await response.json()
-    if (response.status != 200) throw new Error(json.data.message)
+    if (status != 200) throw new Error(data.data.message)
     Cookies.set('requestJoin', JSON.stringify([...JSON.parse(Cookies.get('requestJoin') ?? '[]'), guild]))
 }
 
@@ -82,12 +78,10 @@ const requestJoinApllied = () => {
     return JSON.parse(data)
 }
 
-const guild = {
+export {
     createGuild,
     getGuild,
     joinGuild,
     joinGuildAnonnymous,
     requestJoinApllied
 }
-
-export default guild

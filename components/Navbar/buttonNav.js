@@ -1,9 +1,7 @@
 import { Link as LinkChakra } from '@chakra-ui/react'
-import configs from 'configs'
+import { color, font } from 'configs'
 import Link from 'next/link'
 import NavbarStyle from 'styles/Navbar.module.scss'
-
-const { color, font } = configs
 
 const ButtonNav = ({ text, size, link, authNavbar }) => {
     return (

@@ -2,12 +2,10 @@ import { chakra, HStack, Show, Stack } from '@chakra-ui/react'
 import logoImage from 'assets/images/logo.png'
 import Image from 'next/image'
 import { FaDiscord, FaMedium, FaFacebook, FaInstagram } from 'react-icons/fa'
-import configs from 'configs'
+import { color, font } from 'configs'
 import Link from 'next/link'
 import IconButton from './IconButton'
 import FoooterStyle from 'styles/Footer.module.scss'
-
-const { color, font } = configs
 
 const Footer = ({ marginTop }) => {
     return (

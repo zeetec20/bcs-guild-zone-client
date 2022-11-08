@@ -1,14 +1,15 @@
 import color from 'styles/_color.variable.module.scss'
 import font from 'styles/_font.variable.module.scss'
-import regions from 'configs/regions'
+import regions from './regions'
+import axios from './axios'
+import env from './env'
+import usersGuild from './usersGuild'
 
-const config = {
+export {
     color,
     font,
-    env: {
-        domain: process.env.API_URL
-    },
-    regions
+    env,
+    regions,
+    axios,
+    usersGuild,
 }
-
-export default config
