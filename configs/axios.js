@@ -12,7 +12,7 @@ customAxios.interceptors.response.use(res => res, err => { throw Error(err.respo
  */
 const instance = async (args) => {
     try {
-        return await axios(args)
+        return await customAxios(args)
     } catch (error) {
         throw Error('server error')
     }
