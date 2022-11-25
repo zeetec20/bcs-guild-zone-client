@@ -11,7 +11,7 @@ module.exports = (phase) => {
   const env = {
     API_URL: (() => {
       if (isDev) return 'http://127.0.0.1:4000'
-      if (isProd) return 'http://guild-zone-backend.firmanlestari.com'
+      if (isProd) return 'https://guild-zone-backend.firmanlestari.com'
     })()
   }
 
